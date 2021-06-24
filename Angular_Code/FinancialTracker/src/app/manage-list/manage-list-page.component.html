@@ -1,0 +1,287 @@
+
+<div class="flex-column" fxLayout="column"  fxLayoutAlign="start" fxLayoutGap="20px">
+
+    <div fxFill class="flex-container" fxLayout="row" fxLayoutAlign="space-evenly start" fxLayoutGap.lg="250px" fxLayoutGap.sm="90px" fxLayoutGap.xs="20px">
+        <div fxFlex="15"  fxLayout="column" fxLayoutAlign="start">
+            <mat-form-field >
+                <mat-label>Year</mat-label>
+                <select matNativeControl  (change)="onChangeYear($event.target.value)">
+                    <option [value]="">Select Year</option>
+                    <option *ngFor="let year of yearValues" [value]="year">
+                    {{year}}
+                  </option>
+                </select>
+              </mat-form-field>
+        </div>
+        <div fxFlex="15" fxLayout="column" fxLayoutAlign="center">
+             <mat-form-field >
+              <mat-label>Month</mat-label>
+              <select matNativeControl (change)="onChangeMonth($event.target.value)">
+                <option [value]="">select month</option>
+                <option *ngFor="let month of monthValues" [value]="month">
+                    {{month | titlecase }}
+                </option>
+              </select>
+            </mat-form-field>
+        </div>
+        <div fxFlex="15" fxLayout="column" fxLayoutAlign="end">
+            <mat-form-field>
+                <mat-label>Project Name</mat-label>
+                <select matNativeControl (change)="onChangeProject($event.target.value)">
+                  <option [value]="">select project</option>
+                  <option *ngFor="let project of projectValues" [value]="project">
+                    {{project}}
+                </option>
+                </select>
+              </mat-form-field>
+        </div>
+    </div>
+   
+    <div fxLayout="row" fxLayoutAlign="space-evenly center" >
+        <mat-card fxFlex class="card" [style.height.px]="'80'">
+        <div fxFlex="17" fxLayout="column" fxLayoutAlign="center">
+        {{latestMonth}}
+        </div>
+        <div fxFlex="0" fxLayout="column" fxLayoutAlign="space-evenly end">
+        <button mat-mini-fab (click)="confirmDialog()" 
+                color="accent" 
+                [disabled]="disable"
+                matTooltip="Save Records"><mat-icon>save</mat-icon></button>
+        </div>
+        <div fxFlex="14" fxLayout="column" fxLayoutAlign="space-evenly center"> 
+        <button mat-mini-fab [color]="selectedColor" 
+                hide-gt-sm (click)="toggleEdit()"
+                [matTooltip]="toolTip"><mat-icon>{{buttonText}}</mat-icon></button>
+        </div>
+    </mat-card>
+    </div>
+
+    <div class="table-container mat-elevation-z8">
+        <form [formGroup]="tableFormArray" *ngIf="tableFormArray" >
+    
+        <table mat-table #table [dataSource]="rowsSelects">
+           
+                <ng-container matColumnDef="UID" [sticky]="true">
+                    <th mat-header-cell *matHeaderCellDef>UID
+                        
+                    </th>
+                    <td mat-cell *matCellDef="let row let rowIndex = index" [formGroup]="tableFormArray.at(row)"> 
+                        <input type="text"  formControlName="id" hidden [readOnly]="readonly"> 
+                        <input type="text"  formControlName="project_id" hidden [readOnly]="readonly">
+                        <mat-form-field appearance="outline">
+                            <input matInput  formControlName="uid" readonly [readonly]="readonly">
+                        </mat-form-field> 
+                    </td>
+                  </ng-container>
+
+            <ng-container matColumnDef="EmployeeName">
+                <th mat-header-cell *matHeaderCellDef>Employee Name
+                    <mat-form-field style="width: 9em;">
+                        <select matNativeControl [ngModel]="name" (ngModelChange)="name=$event;selectName($event)"
+                            [ngModelOptions]="{standalone:true}">
+                            <option selected disabled value="search">search</option>
+                            <option [ngValue]="null">All</option>
+                            <option *ngFor="let name of dropdownValues" [value]="name.employee_name">{{name.employee_name}}</option>
+                        </select>
+                    </mat-form-field>
+                </th>
+                <td mat-cell *matCellDef="let row let rowIndex = index" [formGroup]="tableFormArray.at(row)"> 
+                    <mat-form-field appearance="outline">
+                        <input matInput  formControlName="employee_name" readonly [readonly]="readonly">
+                    </mat-form-field> 
+                </td>
+              </ng-container>
+
+            <ng-container matColumnDef="Track">
+                <th mat-header-cell *matHeaderCellDef>Track
+                    <br>
+                    <mat-form-field style="width: 9em;">
+                        <select matNativeControl [ngModel]="name" (ngModelChange)="name=$event;selectTrack($event)"
+                            [ngModelOptions]="{standalone:true}">
+                            <option selected disabled value="search">search</option>
+                            <option [ngValue]="null">All</option>
+                            <option *ngFor="let name of dropdownValues" [value]="name.track">{{name.track}}</option>
+                        </select>
+                    </mat-form-field>
+                </th>
+                <td mat-cell *matCellDef="let row let rowIndex = index" [formGroup]="getFormGroup(row)"> 
+                    <mat-form-field appearance="outline">
+                        <input matInput  formControlName="track" readonly [readonly]="readonly">
+                    </mat-form-field> 
+                </td>
+              </ng-container>
+           
+            <ng-container matColumnDef="Location">
+                <th mat-header-cell *matHeaderCellDef>Location</th>
+                <td mat-cell *matCellDef="let row let rowIndex = index" [formGroup]="getFormGroup(row)"> 
+                    <mat-form-field appearance="outline">
+                        <input matInput  formControlName="location" readonly [readonly]="readonly">
+                    </mat-form-field> 
+                </td>
+              </ng-container>
+            
+            <ng-container matColumnDef="City">
+                <th mat-header-cell *matHeaderCellDef>City</th>
+                <td mat-cell *matCellDef="let row let rowIndex = index" [formGroup]="getFormGroup(row)"> 
+                    <mat-form-field appearance="outline">
+                        <input matInput  formControlName="city" readonly [readonly]="readonly">
+                    </mat-form-field> 
+                </td>
+              </ng-container>
+
+            <ng-container matColumnDef="EngagementType">
+                <th mat-header-cell *matHeaderCellDef>Engagement Type </th>
+                <td mat-cell *matCellDef="let row let rowIndex = index" [formGroup]="getFormGroup(row)"> 
+                    <mat-form-field appearance="outline">
+                        <input matInput  formControlName="engagement_type" readonly [readonly]="readonly">
+                    </mat-form-field> 
+                </td>
+              </ng-container>
+            
+            <ng-container matColumnDef="EmployeeType">
+                <th mat-header-cell *matHeaderCellDef>Employee Type </th>
+                <td mat-cell *matCellDef="let row let rowIndex = index" [formGroup]="getFormGroup(row)"> 
+                    <mat-form-field appearance="outline">
+                        <input matInput  formControlName="employee_type" readonly [readonly]="readonly">
+                    </mat-form-field> 
+                </td>
+              </ng-container>
+
+            <ng-container matColumnDef="BillRate">
+                <th mat-header-cell *matHeaderCellDef>Bill Rate</th>
+                <td mat-cell *matCellDef="let row let rowIndex = index" [formGroup]="getFormGroup(row)"> 
+                    <mat-form-field appearance="outline">
+                        <input matInput  formControlName="bill_rate" readonly [readonly]="readonly">
+                    </mat-form-field> 
+                </td>
+              </ng-container>
+
+            <ng-container matColumnDef="AvailableHours">
+                <th mat-header-cell *matHeaderCellDef>Available Hours </th>
+                <td mat-cell *matCellDef="let row let rowIndex = index" [formGroup]="getFormGroup(row)"> 
+                    <mat-form-field appearance="outline">
+                        <input matInput  formControlName="available_hours" readonly [readonly]="readonly">
+                    </mat-form-field> 
+                </td>
+              </ng-container>
+
+            <ng-container matColumnDef="NBHours">
+                <th mat-header-cell *matHeaderCellDef>NB Hours </th>
+                <td mat-cell *matCellDef="let row let rowIndex = index" [formGroup]="getFormGroup(row)"> 
+                    <mat-form-field appearance="outline">
+                        <input matInput  formControlName="nb_hours" readonly [readonly]="readonly">
+                    </mat-form-field> 
+                </td>
+              </ng-container>
+
+            <ng-container matColumnDef="NBCategory">
+                <th mat-header-cell *matHeaderCellDef>NB Category </th>
+                <td mat-cell *matCellDef="let row let rowIndex = index" [formGroup]="getFormGroup(row)"> 
+                    <mat-form-field appearance="outline">
+                        <input matInput  formControlName="nb_category" readonly [readonly]="readonly">
+                    </mat-form-field> 
+                </td>
+              </ng-container>
+
+            <ng-container matColumnDef="BilledHours">
+                <th mat-header-cell *matHeaderCellDef>Billed Hours</th>
+                <td mat-cell *matCellDef="let row let rowIndex = index" [formGroup]="getFormGroup(row)"> 
+                    <mat-form-field appearance="outline">
+                        <input matInput  formControlName="billed_hours" readonly [readonly]="readonly">
+                    </mat-form-field> 
+                </td>
+              </ng-container>
+
+            <ng-container matColumnDef="TotalRevenue">
+                <th mat-header-cell *matHeaderCellDef>Total Revenue</th>
+                <td mat-cell *matCellDef="let row let rowIndex = index" [formGroup]="getFormGroup(row)"> 
+                    <mat-form-field appearance="outline">
+                        <input matInput  formControlName="total_revenue" readonly [readonly]="readonly">
+                    </mat-form-field> 
+                </td>
+              </ng-container>
+
+            <ng-container matColumnDef="CostRate">
+                <th mat-header-cell *matHeaderCellDef>Cost Rate</th>
+                <td mat-cell *matCellDef="let row let rowIndex = index" [formGroup]="getFormGroup(row)"> 
+                    <mat-form-field appearance="outline">
+                        <input matInput  formControlName="cost_rate" readonly [readonly]="readonly">
+                    </mat-form-field> 
+                </td>
+              </ng-container>
+
+            <ng-container matColumnDef="CostHours">
+                <th mat-header-cell *matHeaderCellDef>Cost Hours</th>
+                <td mat-cell *matCellDef="let row let rowIndex = index" [formGroup]="getFormGroup(row)"> 
+                    <mat-form-field appearance="outline">
+                        <input matInput  formControlName="cost_hours" readonly [readonly]="readonly">
+                    </mat-form-field> 
+                </td>
+              </ng-container>
+
+            <ng-container matColumnDef="TotalExpenses">
+                <th mat-header-cell *matHeaderCellDef>Total Expenses</th>
+                <td mat-cell *matCellDef="let row let rowIndex = index" [formGroup]="getFormGroup(row)"> 
+                    <mat-form-field appearance="outline">
+                        <input matInput  formControlName="total_expenses" readonly [readonly]="readonly">
+                    </mat-form-field> 
+                </td>
+              </ng-container>
+
+            <ng-container matColumnDef="Month">
+                <th mat-header-cell *matHeaderCellDef>Month</th>
+                <td mat-cell *matCellDef="let row let rowIndex = index" [formGroup]="getFormGroup(row)"> 
+                    <mat-form-field appearance="outline">
+                        <input matInput  formControlName="month" readonly [readonly]="readonly">
+                    </mat-form-field> 
+                </td>
+              </ng-container>
+
+            <ng-container matColumnDef="Year">
+                <th mat-header-cell *matHeaderCellDef>Year</th>
+                <td mat-cell *matCellDef="let row let rowIndex = index" [formGroup]="getFormGroup(row)"> 
+                    <mat-form-field appearance="outline">
+                        <input matInput  formControlName="year" readonly [readonly]="readonly">
+                    </mat-form-field> 
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="StartDate">
+                <th mat-header-cell *matHeaderCellDef>Start Date</th>
+                <td mat-cell *matCellDef="let row let rowIndex = index" [formGroup]="getFormGroup(row)"> 
+                    <mat-form-field appearance="outline">
+                        <input matInput formControlName="start_date" readonly [readonly]="readonly">
+                    </mat-form-field> 
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="EndDate">
+                <th mat-header-cell *matHeaderCellDef>End Date</th>
+                <td mat-cell *matCellDef="let row let rowIndex = index" [formGroup]="getFormGroup(row)"> 
+                    <mat-form-field appearance="outline">
+                        <input matInput formControlName="end_date" readonly [readonly]="readonly">
+                    </mat-form-field> 
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="Remarks">
+                <th mat-header-cell *matHeaderCellDef>Remarks</th>
+                <td mat-cell *matCellDef="let row let rowIndex = index" [formGroup]="getFormGroup(row)"> 
+                    <mat-form-field appearance="outline">
+                        <input matInput  formControlName="remarks" readonly [readonly]="readonly">
+                    </mat-form-field> 
+                </td>
+              </ng-container>
+            
+            <ng-container matColumnDef="star" stickyEnd>
+                <th mat-header-cell *matHeaderCellDef> <mat-icon>keyboard_arrow_right</mat-icon></th>
+                <td mat-cell *matCellDef="let element">
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+        </form>
+    </div>
+</div>

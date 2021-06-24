@@ -1,0 +1,154 @@
+
+<div class="flex-container" fxLayout="row" fxLayoutAlign="space-between center">
+  <div fxFlex="20" fxLayoutAlign="space-between center" fxLayout="column" fxLayoutGap="32px" >
+    <span><button mat-mini-fab color="accent" (click)="fileEvent.click()" [disabled]="disable"><mat-icon>description</mat-icon></button>&nbsp;Browse Files</span>
+    <input #fileEvent  type="file" style="display:none;" (change)="incomingfile($event)" (change)="Upload(0)"  accept=".xlsx" >
+  </div>
+  
+  <div fxFlex="60" fxLayoutAlign="center">
+      <mat-form-field >
+        <mat-label>Project Name</mat-label>
+          <mat-select  (selectionChange)="Upload($event.value)" [(value)]="selectedValue">
+          <mat-option selected *ngFor="let opt of totalSheets;let i = index"[value]="i">
+            {{opt}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+  </div>
+  <div fxFlex="20" fxLayoutAlign="space-evenly center" fxLayoutGap="32px">
+    <span><button mat-mini-fab color="primary" [disabled]="!sheetwise_list.length" (click)="summaryDialog()"><mat-icon>open_in_new</mat-icon></button>&nbsp;View Summary</span>
+    </div>
+</div>
+<div class="flex-container" fxLayout="row" fxLayoutAlign="space-evenly center">
+  <span style="color:red;">{{validate_message}}</span>
+</div>
+
+<div class="table-container mat-elevation-z8" >
+  <table mat-table [dataSource]="listData">
+    <ng-container matColumnDef="UID" sticky>
+      <th mat-header-cell *matHeaderCellDef>UID</th>
+      <td mat-cell *matCellDef="let element"> {{element.uid | titlecase  }} </td>
+    </ng-container>
+  
+    <ng-container matColumnDef="EmployeeName">
+      <th mat-header-cell *matHeaderCellDef> Employee Name </th>
+      <td mat-cell *matCellDef="let element"> {{element.employee_name | titlecase }} </td>
+    </ng-container>
+  
+      <ng-container matColumnDef="Track">
+        <th mat-header-cell *matHeaderCellDef> Track </th>
+        <td mat-cell *matCellDef="let element"> {{element.track | titlecase }} </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="Location">
+        <th mat-header-cell *matHeaderCellDef> Location </th>
+        <td mat-cell *matCellDef="let element">{{element.location | titlecase }}</td>
+      </ng-container>
+  
+      <ng-container matColumnDef="City">
+        <th mat-header-cell *matHeaderCellDef> City </th>
+        <td mat-cell *matCellDef="let element"> {{element.city | titlecase }} </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="EngagementType">
+        <th mat-header-cell *matHeaderCellDef> Engagement Type</th>
+        <td mat-cell *matCellDef="let element"> {{element.engagement_type | titlecase }} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="EmployeeType">
+        <th mat-header-cell *matHeaderCellDef>Employee Type</th>
+        <td mat-cell *matCellDef="let element"> {{element.employee_type | titlecase }} </td>
+      </ng-container>
+  
+  
+      <ng-container matColumnDef="BillRate">
+        <th mat-header-cell *matHeaderCellDef> Bill Rate </th>
+        <td mat-cell *matCellDef="let element"> {{element.bill_rate | currency}} </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="AvailableHours">
+        <th mat-header-cell *matHeaderCellDef> Available Hours </th>
+        <td mat-cell *matCellDef="let element"> {{element.available_hours}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="NBHours">
+        <th mat-header-cell *matHeaderCellDef> NB Hours </th>
+        <td mat-cell *matCellDef="let element"> {{element.nb_hours}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="NBCategory">
+        <th mat-header-cell *matHeaderCellDef>NB Category</th>
+        <td mat-cell *matCellDef="let element"> {{element.nb_category | titlecase }} </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="BilledHours">
+        <th mat-header-cell *matHeaderCellDef> Billed Hours </th>
+        <td mat-cell *matCellDef="let element"> {{element.billed_hours}} </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="TotalRevenue">
+        <th mat-header-cell *matHeaderCellDef> Total Revenue </th>
+        <td mat-cell *matCellDef="let element"> {{element.total_revenue | currency}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="CostRate">
+        <th mat-header-cell *matHeaderCellDef> Cost Rate </th>
+        <td mat-cell *matCellDef="let element"> {{element.cost_rate | currency}} </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="CostHours">
+        <th mat-header-cell *matHeaderCellDef> Cost Hours </th>
+        <td mat-cell *matCellDef="let element"> {{element.cost_hours | currency}} </td>
+      </ng-container>
+    
+      <ng-container matColumnDef="TotalExpenses">
+        <th mat-header-cell *matHeaderCellDef> Total Expenses </th>
+        <td mat-cell *matCellDef="let element"> {{element.total_expenses | currency }} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Month">
+        <th mat-header-cell *matHeaderCellDef> Month </th>
+        <td mat-cell *matCellDef="let element"> {{element.month | titlecase }} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Year">
+        <th mat-header-cell *matHeaderCellDef> Year </th>
+        <td mat-cell *matCellDef="let element"> {{element.year}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="StartDate">
+        <th mat-header-cell *matHeaderCellDef> Start Date </th>
+        <td mat-cell *matCellDef="let element"> {{element.start_date}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="EndDate">
+        <th mat-header-cell *matHeaderCellDef> End Date </th>
+        <td mat-cell *matCellDef="let element"> {{element.end_date}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="Remarks">
+        <th mat-header-cell *matHeaderCellDef> Remarks </th>
+        <td mat-cell *matCellDef="let element"> {{element.remarks | titlecase }} </td>
+      </ng-container>
+     
+      <ng-container matColumnDef="star" stickyEnd>
+        <th mat-header-cell *matHeaderCellDef> <mat-icon>keyboard_arrow_right</mat-icon></th>
+        <td mat-cell *matCellDef="let element">
+        </td>
+      </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  
+  </table>
+</div> <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons ></mat-paginator>
+
+<br>
+<div  fxLayoutAlign="end" fxLayout="row">
+  <div fxFlex="10">
+    <span> <button mat-mini-fab color="warn" [disabled]="!sheetwise_list.length" (click)="reset()" style="background-color: #5bc0de!important;"><mat-icon >cached</mat-icon></button>&nbsp;Reset</span>
+  </div>
+  <div fxFlex="10" >
+      <button mat-raised-button color="primary" [disabled]="!sheetwise_list.length" (click)="confirmDialog()">Upload</button>
+  </div>
+</div>

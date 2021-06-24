@@ -1,0 +1,104 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
+using Revenue_track.Model;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using MongoDB.Bson;
+
+namespace Revenue_track.Service
+{
+    [Route("api/[controller]")]
+    [ApiController]
+
+    public class service
+    {
+        private readonly IMongoCollection<Revenue> _revenue;
+        private IConfiguration config
+        {
+            get;
+
+        }
+
+        public service(IConfiguration configuration)
+        {
+            config = configuration;
+                string connectionstring = config.GetValue<String>("Datasettings:ConnectionString");
+            string databasename = config.GetValue<String>("Datasettings:DatabaseName");
+            string collectionname = config.GetValue<String>("Datasettings:CollectionName");
+            var client = new MongoClient(connectionstring);
+            var database = client.GetDatabase(databasename);
+             
+            _revenue = database.GetCollection<Revenue>(collectionname); 
+        }
+        public List<Revenue> Get() =>
+            _revenue.Find(revenue => true).ToList();
+
+        public IEnumerable<string> GetYear()
+        {
+            var years =
+                (from c in _revenue.AsQueryable<Revenue>()
+                 select c.year)
+                .Distinct();
+            return years.ToList();
+        }
+        public IEnumerable<string> GetMonth(string year_param)
+        {
+            var months =
+                (from c in _revenue.AsQueryable<Revenue>()
+                 where c.year == year_param
+                 select c.month)
+                .Distinct();
+            return months.ToList();
+        }
+
+        public IEnumerable<Revenue> GetByYearAndMonth(string year_param,string month_param)
+        {
+            var queryByYear = from e in _revenue.AsQueryable<Revenue>()
+                        where e.year == year_param && e.month.ToLower()==month_param.ToLower()
+                              select e;
+            return queryByYear.ToList();
+        }
+        //public int GetByLatestRecords()
+        //{
+            //var years =
+            //     (from c in _revenue.AsQueryable<Revenue>()
+            //      select int.TryParse(c.year))
+            //     .Distinct();
+            //var months =
+            //     (from c in _revenue.AsQueryable<Revenue>()
+            //      select c.month)
+            //     .Distinct().ToList().Max();
+            //string currentYear = DateTime.Now.Year.ToString();
+            //string currentMonth = DateTime.Now.ToString("MMMM");
+
+            //var queryByDate = from e in _revenue.AsQueryable<Revenue>()
+            //                  where e.year == years
+            //                  select e;
+            //return years;
+       // }
+
+        public Revenue Get(string id) =>
+            _revenue.Find<Revenue>(revenue => revenue.Id == id).FirstOrDefault();
+
+        public Revenue Create(Revenue revenue)
+        {
+            _revenue.InsertOne(revenue);
+            return revenue;
+        }
+
+        public void Update(string id, Revenue revenueIn) =>
+            _revenue.ReplaceOne(revenue => revenue.Id == id, revenueIn);
+
+        public void Remove(Revenue revenueIn) =>
+            _revenue.DeleteOne(revenue => revenue.Id == revenueIn.Id);
+
+        public void Remove(string id) =>
+            _revenue.DeleteOne(revenue => revenue.Id == id);
+
+       
+    }
+}
+

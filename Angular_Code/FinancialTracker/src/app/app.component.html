@@ -1,0 +1,48 @@
+
+<mat-toolbar  color="primary"  class="fixed-header">
+    <mat-toolbar-row >
+        <div fxShow="true" fxHide.gt-sm="true">
+            <button mat-icon-button (click)="sidenav.toggle()">
+              <mat-icon>menu</mat-icon>
+            </button>
+          </div>
+
+        <h1>Financial Management System</h1>
+        <span style="flex: 1 1 auto;"></span>
+        <div class="top-menu" fxShow="true" fxHide.lt-md="true">
+          <a mat-button [routerLink]="'/home'" [routerLinkActive]="['is-active']"> Home </a>
+          <a mat-button [routerLink]="'/'" > Add Employee </a>
+          <a mat-button [routerLink]="'/list'" [routerLinkActive]="['is-active']"> Manage List </a>
+          <a mat-button [routerLink]="'/summary'" [routerLinkActive]="['is-active']"> Summary</a>
+          <a mat-button [routerLink]="'/excel'" [routerLinkActive]="['is-active']"> Upload Docs </a>
+          <button mat-button  [matMenuTriggerFor]="menu">More</button>
+            <mat-menu #menu="matMenu" >
+              <button mat-menu-item [routerLink]="'/forecast'">Forecast Resources</button>
+              <button mat-menu-item>Holidays</button>
+            </mat-menu>
+        </div>
+    </mat-toolbar-row>
+    </mat-toolbar>
+    <mat-sidenav-container fxFlexFill class="example-container">
+
+        <mat-sidenav color="primary" #sidenav fxLayout="column"  mode="over"  opened="false" fxHide.gt-sm="true">
+          <div fxLayout="column"   >
+            <a mat-button [routerLink]="'/home'"> Home </a>
+            <a mat-button [routerLink]="'/'"> Add Employee </a>
+            <a mat-button [routerLink]="'/list'"> Manage List </a>
+            <a mat-button [routerLink]="'/summary'"> Summary</a>
+            <a mat-button [routerLink]="'/excel'"> Upload Docs </a>
+            <button mat-button [matMenuTriggerFor]="menu">Menu</button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item [routerLink]="'/forecast'">Forecast Resources</button>
+              <button mat-menu-item>Holidays</button>
+            </mat-menu>
+          </div>
+        </mat-sidenav>
+        <mat-sidenav-content fxFlexFill>
+            <main>
+              <router-outlet  style="margin-top: 80px;"></router-outlet>
+            </main>
+          </mat-sidenav-content>
+      </mat-sidenav-container>
+   
